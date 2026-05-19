@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outreach — Purenza Tenerife</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #1a1916;
+    --border: #2e2c28;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --text: #e8e4dc;
+    --muted: #7a7568;
+    --green: #4caf7d;
+    --red: #e05c5c;
+    --blue: #5c9be0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    padding: 28px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+  }
+  .logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gold); letter-spacing: .5px; }
+  .logo span { color: var(--muted); font-size: 13px; font-family: 'DM Sans', sans-serif; margin-left: 12px; font-weight: 300; }
+  .stats-bar { display: flex; gap: 28px; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 20px; font-weight: 500; color: var(--gold); }
+  .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* LAYOUT */
+  .layout { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 73px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sidebar-title { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); }
+  .filter-tabs { display: flex; gap: 4px; }
+  .filter-tab {
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--muted);
+    transition: all .2s;
+  }
+  .filter-tab.active { background: var(--gold); border-color: var(--gold); color: #0f0e0c; font-weight: 500; }
+  .filter-tab:hover:not(.active) { border-color: var(--gold); color: var(--gold); }
+
+  .client-list { overflow-y: auto; flex: 1; }
+  .client-item {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background .15s;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .client-item:hover { background: rgba(201,168,76,.06); }
+  .client-item.active { background: rgba(201,168,76,.1); border-left: 2px solid var(--gold); }
+  .client-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0; margin-top: 2px;
+  }
+  .client-info { flex: 1; min-width: 0; }
+  .client-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .client-cat { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .client-status {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px;
+  }
+  .status-pending { background: var(--border); }
+  .status-sent { background: var(--green); }
+  .status-generated { background: var(--gold); }
+
+  /* MAIN */
+  .main { display: flex; flex-direction: column; overflow: hidden; }
+
+  /* MY BUSINESS SECTION */
+  .business-panel {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(201,168,76,.03);
+    display: flex; gap: 24px; align-items: flex-start;
+  }
+  .bp-group { flex: 1; }
+  .bp-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 6px; }
+  .bp-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    width: 100%;
+    transition: border-color .2s;
+  }
+  .bp-input:focus { outline: none; border-color: var(--gold); }
+  .bp-input::placeholder { color: var(--muted); }
+
+  /* EMAIL AREA */
+  .email-area { flex: 1; padding: 32px; overflow-y: auto; }
+  .email-placeholder {
+    height: 100%; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px; color: var(--muted);
+  }
+  .email-placeholder-icon { font-size: 48px; opacity: .3; }
+  .email-placeholder p { font-size: 14px; }
+
+  .email-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .email-card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .email-recipient { font-size: 14px; font-weight: 500; }
+  .email-recipient span { color: var(--muted); font-weight: 300; font-size: 13px; }
+  .email-actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 8px 18px; border-radius: 6px; font-size: 12px; font-weight: 500;
+    cursor: pointer; border: none; font-family: 'DM Sans', sans-serif;
+    transition: all .2s; letter-spacing: .3px;
+  }
+  .btn-gold { background: var(--gold); color: #0f0e0c; }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn-green:hover { opacity: .85; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  .email-subject-row {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+  }
+  .email-subject-row strong { color: var(--text); font-weight: 500; }
+
+  .email-body {
+    padding: 24px;
+    font-size: 14px; line-height: 1.8;
+    white-space: pre-wrap;
+    min-height: 280px;
+    outline: none;
+  }
+  .email-body[contenteditable="true"]:focus { background: rgba(201,168,76,.02); }
+
+  .loading-line {
+    height: 13px; background: var(--border);
+    border-radius: 4px; margin-bottom: 10px;
+    background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .loading-line:nth-child(2) { width: 88%; }
+  .loading-line:nth-child(3) { width: 95%; }
+  .loading-line:nth-child(4) { width: 70%; }
+  .loading-line:nth-child(5) { width: 82%; margin-top: 14px; }
+  .loading-line:nth-child(6) { width: 91%; }
+
+  /* BOTTOM BAR */
+  .bottom-bar {
+    padding: 16px 32px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface);
+  }
+  .bb-info { font-size: 12px; color: var(--muted); }
+  .bb-actions { display: flex; gap: 10px; }
+
+  /* GENERATE ALL */
+  .gen-all-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--gold), #a87c2a);
+    border: none; border-radius: 8px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    color: #0f0e0c; transition: all .2s;
+  }
+  .gen-all-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(201,168,76,.3); }
+  .gen-all-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+  .tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 4px; font-size: 10px;
+    font-weight: 500; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .tag-hotel { background: rgba(92,155,224,.15); color: var(--blue); }
+  .tag-agencia { background: rgba(201,168,76,.15); color: var(--gold); }
+  .tag-restaurante { background: rgba(76,175,125,.15); color: var(--green); }
+  .tag-inmobiliaria { background: rgba(224,92,92,.15); color: var(--red); }
+  .tag-spa { background: rgba(180,100,220,.15); color: #b464dc; }
+  .tag-otros { background: rgba(122,117,104,.15); color: var(--muted); }
+
+  /* COPY TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--green); color: #fff;
+    padding: 12px 20px; border-radius: 8px; font-size: 13px;
+    transform: translateY(80px); opacity: 0;
+    transition: all .3s; z-index: 100;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* PROGRESS */
+  .progress-bar-wrap { height: 2px; background: var(--border); width: 100%; }
+  .progress-bar { height: 2px; background: var(--gold); transition: width .4s; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">✦ PURENZA <span>Tenerife — Limpieza Profesional</span></div>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num" id="totalCount">0</div><div class="stat-lbl">Contactos</div></div>
+    <div class="stat"><div class="stat-num" id="generatedCount" style="color:var(--gold-light)">0</div><div class="stat-lbl">Generados</div></div>
+    <div class="stat"><div class="stat-num" id="sentCount" style="color:var(--green)">0</div><div class="stat-lbl">Enviados</div></div>
+    <button id="gmailBtn" onclick="loginGmail()" style="
+      background:transparent; border:1px solid var(--border); color:var(--muted);
+      padding:8px 16px; border-radius:6px; cursor:pointer; font-family:'DM Sans',sans-serif;
+      font-size:12px; transition:all .2s; display:flex; align-items:center; gap:8px;">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.3 9.5L1 5.7V18c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5.7l-4.3 3.8L12 14 5.3 9.5z"/><path fill="#FBBC04" d="M21 4H3L12 11l9-7z"/></svg>
+      Conectar Gmail
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Prospectos</span>
+      <div class="filter-tabs">
+        <div class="filter-tab active" onclick="filterClients('all',this)">Todos</div>
+        <div class="filter-tab" onclick="filterClients('pending',this)">Pendientes</div>
+        <div class="filter-tab" onclick="filterClients('sent',this)">Enviados</div>
+      </div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="client-list" id="clientList"></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- Business info -->
+    <div class="business-panel">
+      <div class="bp-group">
+        <div class="bp-label">Nombre de tu negocio</div>
+        <input class="bp-input" id="bizName" placeholder="Ej: Purenza" value="Purenza">
+      </div>
+      <div class="bp-group">
+        <div class="bp-label">Tu nombre</div>
+        <input class="bp-input" id="bizOwner" placeholder="Tu nombre" value="Alexei">
+      </div>
+      <div class="bp-group">
+        <div class="bp-label">Teléfono / WhatsApp</div>
+        <input class="bp-input" id="bizPhone" placeholder="+34 600 000 000" value="+34 695 868 778">
+      </div>
+      <div class="bp-group">
+        <div class="bp-label">Servicio clave</div>
+        <input class="bp-input" id="bizService" placeholder="Servicios..." value="Limpieza profesional a domicilio en Tenerife: sofás (desde 45€), colchones (desde 35€), alfombras (desde 30€), tapicería de coche (desde 60€). Somos autónomos, emitimos facturas y aceptamos pago por transferencia. Web: purenza-canarias.com · Instagram: purenza.limpieza">
+      </div>
+      <div class="bp-group">
+        <div class="bp-label">🔑 Anthropic API Key</div>
+        <input class="bp-input" id="apiKey" type="password" placeholder="sk-ant-..." oninput="localStorage.setItem('purenza_api_key', this.value); updateKeyStatus()">
+        <div id="keyStatus" style="font-size:10px;margin-top:4px;color:var(--muted)">Sin clave · <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold)">Obtener →</a></div>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="gen-all-btn" id="genAllBtn" onclick="generateAll()">
+          ✦ Generar todos
+        </button>
+      </div>
+    </div>
+
+    <!-- Email display -->
+    <div class="email-area" id="emailArea">
+      <div class="email-placeholder">
+        <div class="email-placeholder-icon">✉</div>
+        <p>Selecciona un contacto para generar el email</p>
+      </div>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="bb-info" id="bbInfo">Selecciona un contacto de la lista</div>
+      <div class="bb-actions">
+        <button class="btn btn-outline" onclick="copyEmail()" id="copyBtn" disabled>Copiar email</button>
+        <button class="btn btn-gold" onclick="generateEmail()" id="genBtn" disabled>✦ Generar email</button>
+        <button class="btn" id="sendGmailBtn" onclick="sendViaGmail()" disabled style="background:#EA4335;color:#fff;">
+          ✉ Enviar por Gmail
+        </button>
+        <button class="btn btn-green" onclick="markSent()" id="sentBtn" disabled>✓ Marcar enviado</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Email copiado al portapapeles</div>
+
+<script>
+const CLIENTS = [
+  // ═══ HOTELES 5★ ═══
+  {id:1,  name:"Gran Hotel Bahía del Duque", cat:"Hotel 5★ GL", type:"hotel", email:"reservations@bahia-duque.com", city:"Costa Adeje", verified:true},
+  {id:2,  name:"Gran Meliá Palacio de Isora", cat:"Hotel 5★ GL", type:"hotel", email:"mice.isora@melia.com", city:"Alcalá", verified:true},
+  {id:3,  name:"Hard Rock Hotel Tenerife", cat:"Hotel 5★", type:"hotel", email:"reservas@hrhtenerife.com", city:"Adeje", verified:true},
+  {id:4,  name:"Hotel GF Victoria", cat:"Hotel 5★ GL", type:"hotel", email:"recepcion@gfvictoria.com", city:"Costa Adeje", verified:true},
+  {id:5,  name:"Hotel GF Gran Costa Adeje", cat:"Hotel 5★", type:"hotel", email:"guest@gfgrancostaadeje.com", city:"Costa Adeje", verified:true},
+  {id:6,  name:"Iberostar Heritage Grand Mencey", cat:"Hotel 5★", type:"hotel", email:"mcy.spa@iberostar.com", city:"Santa Cruz", verified:true},
+  {id:7,  name:"Hotel Botánico & Oriental Spa Garden", cat:"Hotel 5★ GL", type:"hotel", email:"info@hotelbotanico.com", city:"Puerto de la Cruz", verified:true},
+  {id:8,  name:"Iberostar Selection Sábila Adults Only", cat:"Hotel 5★", type:"hotel", email:"sabila@iberostar.com", city:"Costa Adeje", verified:false},
+  {id:9,  name:"Iberostar Selection Anthelia", cat:"Hotel 5★", type:"hotel", email:"anthelia@iberostar.com", city:"Costa Adeje", verified:false},
+  {id:10, name:"JOIA El Mirador by Iberostar Adults Only", cat:"Hotel 5★", type:"hotel", email:"elmirador@iberostar.com", city:"Costa Adeje", verified:false},
+  {id:11, name:"JOIA Salomé by Iberostar Adults Only", cat:"Hotel 5★", type:"hotel", email:"salome@iberostar.com", city:"Costa Adeje", verified:false},
+  {id:12, name:"Vincci Selección La Plantación del Sur", cat:"Hotel 5★", type:"hotel", email:"laplantacion@vincchoteles.com", city:"Costa Adeje", verified:false},
+  {id:13, name:"Gran Tacande Wellness & Relax Costa Adeje", cat:"Hotel 5★", type:"hotel", email:"info@dreamplacehotels.com", city:"Costa Adeje", verified:false},
+  {id:14, name:"Sheraton La Caleta Resort & Spa", cat:"Hotel 5★", type:"hotel", email:"sheraton.lacaleta@marriott.com", city:"La Caleta", verified:false},
+  {id:15, name:"Meliá Jardines del Teide Adults Only", cat:"Hotel 5★", type:"hotel", email:"jardinesdeteide@melia.com", city:"Costa Adeje", verified:false},
+  {id:16, name:"Royal Hideaway Corales Beach Adults Only", cat:"Hotel 5★", type:"hotel", email:"coralesbeach@barcelo.com", city:"Costa Adeje", verified:false},
+  {id:17, name:"Baobab Suites Costa Adeje", cat:"Hotel 5★", type:"hotel", email:"info@baobabsuites.com", city:"Costa Adeje", verified:false},
+  {id:18, name:"Jardines de Nivaria — Adrián Hoteles", cat:"Hotel 5★", type:"hotel", email:"info@adrianhoteles.com", city:"Costa Adeje", verified:false},
+  {id:19, name:"Hotel Europe Villa Cortés", cat:"Hotel 5★", type:"hotel", email:"villacortes@hoteleurope.es", city:"Playa de las Américas", verified:false},
+  {id:20, name:"Las Terrazas de Abama Suites", cat:"Hotel 5★", type:"hotel", email:"info@abamahotelresort.com", city:"Guía de Isora", verified:false},
+  {id:21, name:"Ritz-Carlton Tenerife Abama", cat:"Hotel 5★ GL", type:"hotel", email:"rcrtenerife@ritzcarlton.com", city:"Guía de Isora", verified:false},
+  {id:22, name:"Hotel Suite Villa María", cat:"Hotel 5★", type:"hotel", email:"recepcion@hotelvillamaria.com", city:"Puerto de la Cruz", verified:false},
+  {id:23, name:"Best Semiramis Puerto de la Cruz", cat:"Hotel 5★", type:"hotel", email:"semiramis@besthotels.es", city:"Puerto de la Cruz", verified:false},
+  {id:24, name:"Bahía Príncipe Fantasia Tenerife", cat:"Hotel 5★", type:"hotel", email:"fantasia.tenerife@bahia-principe.com", city:"San Miguel de Abona", verified:false},
+  {id:25, name:"Bahía Príncipe Escape Tenerife", cat:"Hotel 5★", type:"hotel", email:"escape.tenerife@bahia-principe.com", city:"Costa Adeje", verified:false},
+  // ═══ HOTELES 4★ ═══
+  {id:26, name:"Hotel GF Fañabé", cat:"Hotel 4★", type:"hotel", email:"info@gfhoteles.com", city:"Costa Adeje", verified:true},
+  {id:27, name:"Hotel GF Isabel", cat:"Hotel 4★", type:"hotel", email:"info@gfhoteles.com", city:"Costa Adeje", verified:true},
+  {id:28, name:"Barceló Tenerife", cat:"Hotel 4★", type:"hotel", email:"tenerife@barcelo.com", city:"San Miguel de Abona", verified:false},
+  {id:29, name:"Barceló Santiago Adults Only", cat:"Hotel 4★", type:"hotel", email:"santiago@barcelo.com", city:"Puerto de Santiago", verified:false},
+  {id:30, name:"Hotel Riu Arecas Adults Only", cat:"Hotel 4★", type:"hotel", email:"riarecas@riu.com", city:"Costa Adeje", verified:false},
+  {id:31, name:"Hotel Riu Palace Tenerife", cat:"Hotel 4★", type:"hotel", email:"rpp@riu.com", city:"Costa Adeje", verified:false},
+  {id:32, name:"H10 Las Palmeras", cat:"Hotel 4★", type:"hotel", email:"laspalmeras@h10hotels.com", city:"Playa de las Américas", verified:false},
+  {id:33, name:"H10 Conquistador", cat:"Hotel 4★", type:"hotel", email:"conquistador@h10hotels.com", city:"Playa de las Américas", verified:false},
+  {id:34, name:"H10 Gran Tinerfe", cat:"Hotel 4★", type:"hotel", email:"grantinerfe@h10hotels.com", city:"Costa Adeje", verified:false},
+  {id:35, name:"Tivoli La Caleta Tenerife Resort", cat:"Hotel 4★", type:"hotel", email:"lacaleta@tivolihotels.com", city:"La Caleta", verified:false},
+  {id:36, name:"Catalonia Punta del Rey", cat:"Hotel 4★", type:"hotel", email:"puntadelrey@hoteles-catalonia.es", city:"Candelaria", verified:false},
+  {id:37, name:"Hotel Médano", cat:"Hotel 3★", type:"hotel", email:"info@hotelmedano.com", city:"El Médano", verified:false},
+  {id:38, name:"Hotel GF Noelia", cat:"Hotel 3★", type:"hotel", email:"info@gfhoteles.com", city:"Puerto de la Cruz", verified:true},
+  // ═══ SPA & WELLNESS ═══
+  {id:39, name:"Bahía Wellness Retreat — Bahía del Duque", cat:"Spa & Wellness", type:"spa", email:"wellness@bahia-duque.com", city:"Costa Adeje", verified:true},
+  {id:40, name:"Oriental Spa Garden — Hotel Botánico", cat:"Spa & Wellness", type:"spa", email:"spa@hotelbotanico.com", city:"Puerto de la Cruz", verified:false},
+  {id:41, name:"SHA Wellness Clinic Tenerife", cat:"Spa & Wellness", type:"spa", email:"tenerife@shawellness.com", city:"Adeje", verified:false},
+  {id:42, name:"Spa Sensations — Iberostar Mencey", cat:"Spa & Wellness", type:"spa", email:"mcy.spa@iberostar.com", city:"Santa Cruz", verified:true},
+  {id:43, name:"Abama Spa — Ritz-Carlton", cat:"Spa & Wellness", type:"spa", email:"spa.abama@ritzcarlton.com", city:"Guía de Isora", verified:false},
+  {id:44, name:"Thalasso Spa Gran Tacande", cat:"Spa & Wellness", type:"spa", email:"spa@dreamplacehotels.com", city:"Costa Adeje", verified:false},
+  // ═══ INMOBILIARIAS & ALQUILER VACACIONAL ═══
+  {id:45, name:"Engel & Völkers Santa Cruz de Tenerife", cat:"Inmobiliaria lujo", type:"inmobiliaria", email:"santacruzdetenerife@engelvoelkers.com", city:"Santa Cruz", verified:true},
+  {id:46, name:"Engel & Völkers Costa Adeje", cat:"Inmobiliaria lujo", type:"inmobiliaria", email:"costaadeje@engelvoelkers.com", city:"Costa Adeje", verified:false},
+  {id:47, name:"Engel & Völkers Puerto de la Cruz", cat:"Inmobiliaria lujo", type:"inmobiliaria", email:"puertodelacruz@engelvoelkers.com", city:"Puerto de la Cruz", verified:false},
+  {id:48, name:"Re/Max Tenerife Sur", cat:"Inmobiliaria", type:"inmobiliaria", email:"tenerifesur@remax.es", city:"Adeje", verified:false},
+  {id:49, name:"Re/Max Tenerife Norte", cat:"Inmobiliaria", type:"inmobiliaria", email:"tenerifeNorte@remax.es", city:"Puerto de la Cruz", verified:false},
+  {id:50, name:"Tenerife Sotheby's International Realty", cat:"Inmobiliaria lujo", type:"inmobiliaria", email:"info@tenerifesir.com", city:"Costa Adeje", verified:false},
+  {id:51, name:"API Inmobiliaria Tenerife Sur", cat:"Inmobiliaria", type:"inmobiliaria", email:"info@apiinmobiliariatenerife.com", city:"Los Cristianos", verified:false},
+  {id:52, name:"Key Solutions Tenerife", cat:"Inmobiliaria", type:"inmobiliaria", email:"info@keysolutionstenerife.com", city:"Los Cristianos", verified:false},
+  {id:53, name:"Century 21 Tenerife Sur", cat:"Inmobiliaria", type:"inmobiliaria", email:"tenerifesur@century21.es", city:"Adeje", verified:false},
+  {id:54, name:"Tenerife Holiday Rentals", cat:"Gestora vacacional", type:"inmobiliaria", email:"info@tenerifeholidayrentals.com", city:"Costa Adeje", verified:false},
+  {id:55, name:"VillaPlus Tenerife", cat:"Gestora vacacional", type:"inmobiliaria", email:"tenerife@villaplus.com", city:"Costa Adeje", verified:false},
+  {id:56, name:"Tenerife Houses — Gestora", cat:"Gestora vacacional", type:"inmobiliaria", email:"info@tenerifehouses.com", city:"Los Cristianos", verified:false},
+  {id:57, name:"Sunset Properties Tenerife", cat:"Gestora vacacional", type:"inmobiliaria", email:"info@sunsetpropertiestenerife.com", city:"Costa Adeje", verified:false},
+  // ═══ AGENCIAS DE VIAJES & TOURS ═══
+  {id:58, name:"Viajes El Corte Inglés — Santa Cruz", cat:"Agencia de viajes", type:"agencia", email:"santacruz.tenerife@viajeselcorteingles.es", city:"Santa Cruz", verified:false},
+  {id:59, name:"Civitatis Tenerife — Operadores", cat:"Tours & actividades", type:"agencia", email:"operadores@civitatis.com", city:"Online", verified:false},
+  {id:60, name:"Nautalia Viajes Tenerife", cat:"Agencia de viajes", type:"agencia", email:"tenerife@nautalia.es", city:"La Laguna", verified:false},
+  {id:61, name:"Halcón Viajes Tenerife Sur", cat:"Agencia de viajes", type:"agencia", email:"tenerifesur@halconviajes.es", city:"Los Cristianos", verified:false},
+  {id:62, name:"Tenerife Top Training — Excursiones", cat:"Tours & actividades", type:"agencia", email:"info@tenerifetoptraining.com", city:"Costa Adeje", verified:false},
+  {id:63, name:"Siam Park Tenerife — RRHH/Eventos", cat:"Parque temático", type:"agencia", email:"eventos@siampark.net", city:"Costa Adeje", verified:false},
+  {id:64, name:"Loro Parque Tenerife — Eventos", cat:"Parque temático", type:"agencia", email:"reservas@loroparque.com", city:"Puerto de la Cruz", verified:false},
+  // ═══ RESTAURANTES ═══
+  {id:65, name:"Restaurante NUB — Estrella Michelin", cat:"Restaurante ★ Michelin", type:"restaurante", email:"info@nubtenerife.com", city:"Adeje", verified:false},
+  {id:66, name:"El Rincón de Juan Carlos — 2 Estrellas", cat:"Restaurante ★★ Michelin", type:"restaurante", email:"info@elrinconedejuancarlos.com", city:"Los Gigantes", verified:false},
+  {id:67, name:"Kazan Tenerife — Japonés", cat:"Restaurante japonés", type:"restaurante", email:"info@kazantenerife.com", city:"Santa Cruz", verified:false},
+  {id:68, name:"El Coto de Antonio", cat:"Restaurante alta cocina", type:"restaurante", email:"reservas@cotodeantonio.com", city:"Santa Cruz", verified:false},
+  {id:69, name:"Restaurante Mesón Los Monjes", cat:"Restaurante", type:"restaurante", email:"info@mesonlosmonjes.com", city:"Puerto de la Cruz", verified:false},
+  {id:70, name:"Dos Naifes by Jorge Peñate — Gran Meliá", cat:"Restaurante Sol Repsol", type:"restaurante", email:"dosnaifes@melia.com", city:"Alcalá", verified:false},
+  // ═══ ALQUILER DE COCHES ═══
+  {id:71, name:"Cicar Rent a Car Tenerife", cat:"Alquiler de vehículos", type:"otros", email:"info@cicar.com", city:"Tenerife", verified:false},
+  {id:72, name:"Record Rent a Car Tenerife Sur", cat:"Alquiler de vehículos", type:"otros", email:"tenerifesur@recordrentacar.com", city:"Aeropuerto Sur", verified:false},
+  {id:73, name:"Autos Cabrera Medina Tenerife", cat:"Alquiler de vehículos", type:"otros", email:"info@cabmedina.com", city:"Tenerife", verified:false},
+  {id:74, name:"Goldcar Tenerife", cat:"Alquiler de vehículos", type:"otros", email:"tenerife@goldcar.es", city:"Aeropuerto Sur", verified:false},
+  // ═══ GESTORAS DE COMUNIDADES / ADMINISTRADORES ═══
+  {id:75, name:"Fincarent Tenerife — Gestora", cat:"Administrador de fincas", type:"otros", email:"info@fincarent.es", city:"Santa Cruz", verified:false},
+  {id:76, name:"Gestión Integral Fincas Tenerife", cat:"Administrador de fincas", type:"otros", email:"info@gestionintegralfincas.com", city:"Adeje", verified:false},
+  {id:77, name:"Conasa Tenerife — Administración", cat:"Administrador de fincas", type:"otros", email:"info@conasatenerife.es", city:"Santa Cruz", verified:false},
+  // ═══ OTROS ═══
+  {id:78, name:"Cabildo de Tenerife — Área de Turismo", cat:"Institución pública", type:"otros", email:"turismo@cabildodetenerife.es", city:"Santa Cruz", verified:false},
+  {id:79, name:"Palacio de Congresos de Tenerife", cat:"Centro de eventos", type:"otros", email:"info@palaciodecongresosTenerife.com", city:"Santa Cruz", verified:false},
+  {id:80, name:"Centro Comercial Plaza del Duque", cat:"Centro comercial", type:"otros", email:"gerencia@plazadelduque.com", city:"Costa Adeje", verified:false},
+  {id:81, name:"CC Safari Alcampo Tenerife", cat:"Centro comercial", type:"otros", email:"tenerife@alcampo.es", city:"Santa Cruz", verified:false},
+  {id:82, name:"Tenerife Convention Bureau", cat:"Turismo de eventos", type:"otros", email:"info@webtenerife.es", city:"Santa Cruz", verified:false},
+];
+
+let clients = CLIENTS.map(c => ({...c, status:'pending', email_subject:'', email_body:''}));
+let activeId = null;
+let currentFilter = 'all';
+
+const categoryIcons = {
+  hotel: '🏨', agencia: '✈️', restaurante: '🍽️', inmobiliaria: '🏠', spa: '💆', otros: '🏛️'
+};
+
+function updateStats() {
+  document.getElementById('totalCount').textContent = clients.length;
+  document.getElementById('generatedCount').textContent = clients.filter(c=>c.status==='generated'||c.status==='sent').length;
+  document.getElementById('sentCount').textContent = clients.filter(c=>c.status==='sent').length;
+  const sent = clients.filter(c=>c.status==='sent').length;
+  document.getElementById('progressBar').style.width = (sent/clients.length*100)+'%';
+}
+
+function renderList() {
+  const list = document.getElementById('clientList');
+  const filtered = currentFilter === 'all' ? clients :
+    currentFilter === 'sent' ? clients.filter(c=>c.status==='sent') :
+    clients.filter(c=>c.status==='pending');
+  list.innerHTML = filtered.map(c => `
+    <div class="client-item ${c.id===activeId?'active':''}" onclick="selectClient(${c.id})">
+      <div class="client-icon" style="background:rgba(255,255,255,.04)">${categoryIcons[c.type]||'📋'}</div>
+      <div class="client-info">
+        <div class="client-name">${c.name}</div>
+        <div class="client-cat">
+          <span class="tag tag-${c.type}">${c.cat}</span>
+          <span style="color:var(--muted);font-size:10px;margin-left:4px">${c.city}</span>
+          ${c.verified ? '<span style="color:var(--green);font-size:10px;margin-left:4px">✓ verificado</span>' : ''}
+        </div>
+      </div>
+      <div class="client-status status-${c.status==='generated'?'generated':c.status}"></div>
+    </div>
+  `).join('');
+}
+
+function selectClient(id) {
+  activeId = id;
+  renderList();
+  const c = clients.find(x=>x.id===id);
+  document.getElementById('bbInfo').textContent = `${c.name} · ${c.email}`;
+  document.getElementById('genBtn').disabled = false;
+  document.getElementById('copyBtn').disabled = !c.email_body;
+  document.getElementById('sentBtn').disabled = !c.email_body;
+
+  if (c.email_body) {
+    showEmail(c);
+  } else {
+    document.getElementById('emailArea').innerHTML = `
+      <div class="email-placeholder">
+        <div class="email-placeholder-icon">✉</div>
+        <p>Pulsa <strong>Generar email</strong> para crear el mensaje personalizado</p>
+      </div>`;
+  }
+}
+
+function showEmail(c) {
+  document.getElementById('emailArea').innerHTML = `
+    <div class="email-card">
+      <div class="email-card-header">
+        <div class="email-recipient">Para: <span>${c.email}</span></div>
+        <div style="font-size:11px;color:var(--muted)">${c.name}</div>
+      </div>
+      <div class="email-subject-row">Asunto: <strong id="subjectDisplay">${c.email_subject}</strong></div>
+      <div class="email-body" id="emailBody" contenteditable="true">${c.email_body}</div>
+    </div>`;
+}
+
+function showLoading() {
+  document.getElementById('emailArea').innerHTML = `
+    <div class="email-card">
+      <div class="email-card-header">
+        <div class="email-recipient" style="color:var(--muted)">Generando con IA...</div>
+      </div>
+      <div class="email-body">
+        ${[100,88,95,70,82,91,75,93].map(w=>`<div class="loading-line" style="width:${w}%"></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+async function generateEmail() {
+  if (!activeId) return;
+  const c = clients.find(x=>x.id===activeId);
+  const bizName = document.getElementById('bizName').value;
+  const bizOwner = document.getElementById('bizOwner').value;
+  const bizPhone = document.getElementById('bizPhone').value;
+  const bizService = document.getElementById('bizService').value;
+
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('copyBtn').disabled = true;
+  document.getElementById('sentBtn').disabled = true;
+  showLoading();
+
+  const prompt = `Eres un experto en ventas B2B. Escribe un email frío y profesional en español para ${c.name} (${c.cat}, ${c.city}, Tenerife).
+
+El remitente es ${bizOwner} de "${bizName}" — empresa de limpieza profesional a domicilio en Tenerife.
+
+SERVICIOS Y PRECIOS DE PURENZA:
+- Sofá 2 plazas: 45€ | Sofá 3 plazas: 60€ | Sofá esquinero: 80€
+- Sillón: 20€ | Puf: 15€ | Silla tapizada: 12€
+- Colchón individual: 35€ | Colchón matrimonio: 50€ | Colchón king size: 65€
+- Alfombra hasta 4m²: 30€ | 4-8m²: 50€ | 8-15m²: 80€ | +15m²: desde 90€
+- Tapicería coche (sedan/hatch): 60€ | SUV/minivan: 80€ | Completo+maletero: 100€
+- Trabajamos como autónomos: emitimos facturas, aceptamos transferencia bancaria
+- Web: purenza-canarias.com | Instagram: purenza.limpieza | Tel: ${bizPhone}
+
+El email debe:
+- Ser MUY personalizado para ${c.cat} — menciona exactamente qué servicio les sería útil (ej: hoteles → colchones y sofás de habitaciones; restaurantes → sillas y tapicería; agencias de alquiler → colchones y sofás entre inquilinos; spas → alfombras y sillones)
+- Tener un asunto atractivo (línea ASUNTO: al inicio)
+- Ser cálido, directo y profesional — máximo 160 palabras en el cuerpo
+- Destacar que somos profesionales con facturas (importante para empresas)
+- Terminar con llamada a la acción: WhatsApp o visitar la web
+- Firma: ${bizOwner} · ${bizName} · ${bizPhone} · purenza-canarias.com
+
+Formato EXACTO de respuesta:
+ASUNTO: [asunto aquí]
+
+[cuerpo del email aquí]`;
+
+  try {
+    const apiKey = document.getElementById('apiKey').value || localStorage.getItem('purenza_api_key') || '';
+    if (!apiKey) {
+      document.getElementById('emailArea').innerHTML = `<div class="email-placeholder"><p style="color:var(--red)">⚠ Introduce tu Anthropic API Key arriba para generar emails.</p></div>`;
+      document.getElementById('genBtn').disabled = false;
+      return;
+    }
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{role:"user", content: prompt}]
+      })
+    });
+    const data = await res.json();
+    const text = data.content.map(i=>i.text||'').join('');
+
+    const subjectMatch = text.match(/ASUNTO:\s*(.+)/i);
+    const subject = subjectMatch ? subjectMatch[1].trim() : `Propuesta de servicio para ${c.name}`;
+    const body = text.replace(/ASUNTO:\s*.+\n?/i, '').trim();
+
+    c.email_subject = subject;
+    c.email_body = body;
+    c.status = 'generated';
+
+    showEmail(c);
+    document.getElementById('copyBtn').disabled = false;
+    document.getElementById('sentBtn').disabled = false;
+  } catch(e) {
+    document.getElementById('emailArea').innerHTML = `<div class="email-placeholder"><p style="color:var(--red)">Error al generar. Inténtalo de nuevo.</p></div>`;
+  }
+
+  document.getElementById('genBtn').disabled = false;
+  updateStats();
+  renderList();
+}
+
+async function generateAll() {
+  const btn = document.getElementById('genAllBtn');
+  btn.disabled = true;
+  btn.textContent = '⟳ Generando...';
+
+  const pending = clients.filter(c=>c.status==='pending');
+  for (let i=0; i<pending.length; i++) {
+    activeId = pending[i].id;
+    renderList();
+    await generateEmail();
+    await new Promise(r=>setTimeout(r,600));
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '✦ Generar todos';
+}
+
+function markSent() {
+  if (!activeId) return;
+  const c = clients.find(x=>x.id===activeId);
+  // save any edits
+  const bodyEl = document.getElementById('emailBody');
+  if (bodyEl) c.email_body = bodyEl.innerText;
+  c.status = 'sent';
+  updateStats();
+  renderList();
+  showToast('✓ Marcado como enviado');
+  document.getElementById('sentBtn').disabled = true;
+}
+
+function copyEmail() {
+  if (!activeId) return;
+  const c = clients.find(x=>x.id===activeId);
+  const bodyEl = document.getElementById('emailBody');
+  const body = bodyEl ? bodyEl.innerText : c.email_body;
+  const full = `Asunto: ${c.email_subject}\n\n${body}`;
+  navigator.clipboard.writeText(full).then(()=>showToast('✓ Email copiado al portapapeles'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+function filterClients(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
+// ═══ GMAIL OAUTH ═══
+const GMAIL_CLIENT_ID = '781393704507-p1osvaafqlat091f5su8559ri4bkc3uu.apps.googleusercontent.com';
+const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.send';
+let gmailToken = null;
+let tokenClient = null;
+
+window.onload = function() {
+  google.accounts.id.initialize({ client_id: GMAIL_CLIENT_ID });
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GMAIL_CLIENT_ID,
+    scope: GMAIL_SCOPE,
+    callback: (resp) => {
+      if (resp.error) { showToast('❌ Error al conectar Gmail'); return; }
+      gmailToken = resp.access_token;
+      const btn = document.getElementById('gmailBtn');
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.3 9.5L1 5.7V18c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5.7l-4.3 3.8L12 14 5.3 9.5z"/><path fill="#FBBC04" d="M21 4H3L12 11l9-7z"/></svg> Gmail conectado ✓`;
+      btn.style.borderColor = 'var(--green)';
+      btn.style.color = 'var(--green)';
+      showToast('✓ Gmail conectado correctamente');
+      if (activeId) document.getElementById('sendGmailBtn').disabled = false;
+    }
+  });
+  updateStats();
+  renderList();
+  const savedKey = localStorage.getItem('purenza_api_key');
+  if (savedKey) { document.getElementById('apiKey').value = savedKey; updateKeyStatus(); }
+};
+
+function loginGmail() {
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+async function sendViaGmail() {
+  if (!gmailToken) { showToast('⚠ Primero conecta Gmail'); loginGmail(); return; }
+  if (!activeId) return;
+  const c = clients.find(x => x.id === activeId);
+  const bodyEl = document.getElementById('emailBody');
+  const body = bodyEl ? bodyEl.innerText : c.email_body;
+  const subject = c.email_subject;
+  const to = c.email;
+
+  const emailLines = [
+    `To: ${to}`,
+    `Subject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    btoa(unescape(encodeURIComponent(body)))
+  ];
+  const raw = btoa(unescape(encodeURIComponent(emailLines.join('\r\n'))))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+  const sendBtn = document.getElementById('sendGmailBtn');
+  sendBtn.disabled = true;
+  sendBtn.textContent = '⟳ Enviando...';
+
+  try {
+    const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${gmailToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ raw })
+    });
+    if (res.ok) {
+      c.status = 'sent';
+      c.email_body = body;
+      updateStats();
+      renderList();
+      markSent();
+      showToast(`✓ Email enviado a ${to}`);
+      sendBtn.textContent = '✓ Enviado';
+    } else {
+      const err = await res.json();
+      if (err.error?.code === 401) {
+        gmailToken = null;
+        showToast('⚠ Token expirado — reconecta Gmail');
+        loginGmail();
+      } else {
+        showToast('❌ Error al enviar: ' + (err.error?.message || 'desconocido'));
+        sendBtn.disabled = false;
+        sendBtn.textContent = '✉ Enviar por Gmail';
+      }
+    }
+  } catch(e) {
+    showToast('❌ Error de red al enviar');
+    sendBtn.disabled = false;
+    sendBtn.textContent = '✉ Enviar por Gmail';
+  }
+}
+
+function updateKeyStatus() {
+  const key = document.getElementById('apiKey').value;
+  const el = document.getElementById('keyStatus');
+  if (key && key.startsWith('sk-ant-')) {
+    el.innerHTML = '<span style="color:var(--green)">✓ API Key lista</span>';
+  } else if (key) {
+    el.innerHTML = '<span style="color:var(--red)">⚠ Formato incorrecto</span>';
+  } else {
+    el.innerHTML = `Sin clave · <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold)">Obtener →</a>`;
+  }
+}
+
+// INIT — reemplaza el anterior
+updateStats();
+renderList();
+</script>
+</body>
+</html>
